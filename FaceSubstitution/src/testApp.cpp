@@ -35,47 +35,87 @@ void testApp::update() {
     cam.getTextureReference().readToPixels(camPixels);
     
 	if(cam.isFrameNew()) {
+        
 		camTracker.update(toCv(cam));
 		
-		cloneReady = camTracker.getFound();
-		if(cloneReady) {
-			
-            ofMesh camMesh = camTracker.getImageMesh();
-			camMesh.clearTexCoords();
-			camMesh.addTexCoords(srcPoints);
-			
-			
-            maskFbo.begin();
-			ofClear(0, 255);
-			camMesh.draw();
-			maskFbo.end();
-            
-			
-			srcFbo.begin();
-			ofClear(0, 255);
-			src.bind();
-			camMesh.draw();
-			src.unbind();
-			srcFbo.end();
-            
-			
-			clone.setStrength(16);
-			clone.update(srcFbo.getTextureReference(), cam.getTextureReference(), maskFbo.getTextureReference());
-		}
+//		cloneReady = camTracker.getFound();
+//		if(cloneReady) {
+//			
+//            ofMesh camMesh = camTracker.getImageMesh();
+//			camMesh.clearTexCoords();
+//			camMesh.addTexCoords(srcPoints);
+//			
+//			
+//            maskFbo.begin();
+//			ofClear(0, 255);
+//			camMesh.draw();
+//			maskFbo.end();
+//            
+//			
+//			srcFbo.begin();
+//			ofClear(0, 255);
+//			src.bind();
+//			camMesh.draw();
+//			src.unbind();
+//			srcFbo.end();
+//            			
+//			clone.setStrength(16);
+//			clone.update(srcFbo.getTextureReference(), cam.getTextureReference(), maskFbo.getTextureReference());
+//		}
 	}
 }
 
 void testApp::draw() {
     
-	ofSetColor(255);
-	
-	
+    
     ofScale(ofGetWidth() / cam.getWidth(), ofGetHeight() / cam.getHeight());
-    if(src.getWidth() > 0 && cloneReady) {
-		clone.draw(0, 0);
-	} else {
-		cam.draw(0, 0);
-	}
+    
+    
+	ofSetColor(255);
+    
+    ofClear(0, 0, 0);
+    
+    //ofSetupScreenOrtho(640, 480, OF_ORIENTATION_DEFAULT, true, -1000, 1000);
+    
+    ofMesh imageMesh = camTracker.getImageMesh();
+    
+    ofPolyline faceOutline = camTracker.getImageFeature();
+    
+    
+    ofSetColor(255, 255, 255);
+    ofFill();
+    ofBeginShape();
+    vector<ofVec3f> vertices = faceOutline.getVertices();
+    for (int i = 0; i < vertices.size(); i++) {
+        ofVec3f p = vertices.at(i);
+        ofVertex(p);
+    }
+    ofEndShape();
+    
+    ofEnableBlendMode(OF_BLENDMODE_MULTIPLY);
+//    cam.draw(0, 0);
+
+    
+    
+    
+	
+	
+//    if(src.getWidth() > 0 && cloneReady) {
+//		clone.draw(0, 0);
+//	} else {
+//		cam.draw(0, 0);
+//	}
+    
+    cam.draw(0, 0);
+    
+    imageMesh.clearTexCoords();
+    imageMesh.addTexCoords(srcPoints);
+    src.bind();
+    
+    imageMesh.draw();
+    
+    ofDisableBlendMode();
+    ofEnableBlendMode(OF_BLENDMODE_ALPHA);
     
     
     
