@@ -108,14 +108,14 @@ void testApp::draw() {
     
     cam.draw(0, 0);
     
+    ofDisableBlendMode();
+    ofEnableBlendMode(OF_BLENDMODE_ALPHA);
+    
     imageMesh.clearTexCoords();
     imageMesh.addTexCoords(srcPoints);
     src.bind();
     
     imageMesh.draw();
-    
-    ofDisableBlendMode();
-    ofEnableBlendMode(OF_BLENDMODE_ALPHA);
     
     
     
