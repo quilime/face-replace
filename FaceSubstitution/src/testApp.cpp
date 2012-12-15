@@ -68,16 +68,13 @@ void testApp::update() {
 void testApp::draw() {
     
 	ofSetColor(255);
-	
-	
+		
     ofScale(ofGetWidth() / cam.getWidth(), ofGetHeight() / cam.getHeight());
     if(src.getWidth() > 0 && cloneReady) {
 		clone.draw(0, 0);
 	} else {
 		cam.draw(0, 0);
 	}
-    
-    
     
 	
 	if(!camTracker.getFound()) {
