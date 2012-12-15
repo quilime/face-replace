@@ -39,14 +39,17 @@ void testApp::update() {
 		
 		cloneReady = camTracker.getFound();
 		if(cloneReady) {
-			ofMesh camMesh = camTracker.getImageMesh();
+			
+            ofMesh camMesh = camTracker.getImageMesh();
 			camMesh.clearTexCoords();
 			camMesh.addTexCoords(srcPoints);
 			
-			maskFbo.begin();
+			
+            maskFbo.begin();
 			ofClear(0, 255);
 			camMesh.draw();
 			maskFbo.end();
+            
 			
 			srcFbo.begin();
 			ofClear(0, 255);
@@ -54,6 +57,7 @@ void testApp::update() {
 			camMesh.draw();
 			src.unbind();
 			srcFbo.end();
+            
 			
 			clone.setStrength(16);
 			clone.update(srcFbo.getTextureReference(), cam.getTextureReference(), maskFbo.getTextureReference());
@@ -65,11 +69,16 @@ void testApp::draw() {
     
 	ofSetColor(255);
 	
-	if(src.getWidth() > 0 && cloneReady) {
+	
+    ofScale(ofGetWidth() / cam.getWidth(), ofGetHeight() / cam.getHeight());
+    if(src.getWidth() > 0 && cloneReady) {
 		clone.draw(0, 0);
 	} else {
 		cam.draw(0, 0);
 	}
+    
+    
+    
 	
 	if(!camTracker.getFound()) {
 		drawHighlightString("camera face not found", 10, 10);
@@ -109,7 +118,7 @@ void testApp::keyPressed(int key){
             
     case ' ':
         int t = ofGetUnixTime();
-        camImg.grabScreen(0, 0, ofGetWidth(), ofGetHeight());
+        camImg.setFromPixels(camPixels);
         camImg.saveImage("capture/face_" + ofToString(t) + ".png");               
         break;    
 	}
