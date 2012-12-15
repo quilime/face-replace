@@ -23,7 +23,6 @@ void testApp::setup() {
 	faces.allowExt("jpg");
 	faces.allowExt("png");
 	faces.listDir("faces");
-    
 	currentFace = 0;
 	if(faces.size()!=0){
 		loadFace(faces.getPath(currentFace));
