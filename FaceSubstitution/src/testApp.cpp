@@ -68,12 +68,13 @@ void testApp::update() {
 void testApp::draw() {
     
     
-    ofScale(ofGetWidth() / cam.getWidth(), ofGetHeight() / cam.getHeight());
+    ofTranslate(ofGetWidth(), 0);
+    ofScale(-ofGetWidth() / cam.getWidth(), ofGetHeight() / cam.getHeight());
+    //    ofScale(-1, 0);
     
     
 	ofSetColor(255);
-
-    
+    //cam.draw(0, 0);
     ofClear(0, 0, 0);
     
     //ofSetupScreenOrtho(640, 480, OF_ORIENTATION_DEFAULT, true, -1000, 1000);
@@ -94,7 +95,8 @@ void testApp::draw() {
     ofEndShape();
     
     ofEnableBlendMode(OF_BLENDMODE_MULTIPLY);
-//    cam.draw(0, 0);
+    
+    
 
     
     
@@ -118,7 +120,8 @@ void testApp::draw() {
     
     imageMesh.draw();
     
-	
+
+    /*
 	if(!camTracker.getFound()) {
 		drawHighlightString("camera face not found", 10, 10);
 	}
@@ -127,6 +130,7 @@ void testApp::draw() {
 	} else if(!srcTracker.getFound()) {
 		drawHighlightString("image face not found", 10, 30);
 	}
+     */
     
 }
 
