@@ -25,14 +25,14 @@ void testApp::draw() {
     
     //cam.draw(0, 0);
     
-    //    ofClear(0, 0, 0);
+    
     
     // save camera pixels
 	cam.getTextureReference().readToPixels(camImgPixels);
     
 	if(tracker.getFound()) {
         
-        
+        ofClear(0, 0, 0);
 		
 		ofSetupScreenOrtho(640, 480, OF_ORIENTATION_DEFAULT, true, -1000, 1000);
         
@@ -41,9 +41,24 @@ void testApp::draw() {
         ofPolyline faceOutline = tracker.getImageFeature(ofxFaceTracker::FACE_OUTLINE);
         
         
+        
         ofSetColor(255, 255, 255);
         ofFill();
-        faceOutline.draw();
+        ofBeginShape();
+        vector<ofVec3f> vertices = faceOutline.getVertices();
+        for (int i = 0; i < vertices.size(); i++) {
+            ofVec3f p = vertices.at(i);
+            ofVertex(p);
+        }
+        ofEndShape();
+        
+        ofEnableBlendMode(OF_BLENDMODE_MULTIPLY);
+        cam.draw(0, 0);
+        ofDisableBlendMode();
+        ofEnableBlendMode(OF_BLENDMODE_ALPHA);
+        
+
+        //faceOutline.draw();
         //cam.draw(0, 0);
         
         //cam.getTextureReference().bind();
@@ -52,9 +67,9 @@ void testApp::draw() {
         imageMesh.addTexCoords(srcPoints);
         src.bind();
         
-        //imageMesh.draw();
+        imageMesh.draw();
         
-		cam.getTextureReference().unbind();
+		//cam.getTextureReference().unbind();
 	}
     
     ofDrawBitmapString(ofToString((int) ofGetFrameRate()), 10, 20);
