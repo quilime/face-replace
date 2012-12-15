@@ -3,6 +3,7 @@
 using namespace ofxCv;
 
 string facesDir = "faces";
+bool showcam = false;
 
 void testApp::setup() {
 #ifdef TARGET_OSX
@@ -17,6 +18,7 @@ void testApp::setup() {
 	settings.height = cam.getHeight();
 	maskFbo.allocate(settings);
 	srcFbo.allocate(settings);
+    staticFbo.allocate(settings);
 	camTracker.setup();
 	srcTracker.setup();
 	srcTracker.setIterations(25);
@@ -37,9 +39,7 @@ void testApp::update() {
     cam.getTextureReference().readToPixels(camPixels);
     
 	if(cam.isFrameNew()) {
-        
 		camTracker.update(toCv(cam));
-		
 //		cloneReady = camTracker.getFound();
 //		if(cloneReady) {
 //			
@@ -68,78 +68,55 @@ void testApp::update() {
 }
 
 void testApp::draw() {
-    
-    
+        
     ofTranslate(ofGetWidth(), 0);
     ofScale(-ofGetWidth() / cam.getWidth(), ofGetHeight() / cam.getHeight());
-    //    ofScale(-1, 0);
     
-    
-	ofSetColor(255);
-    //cam.draw(0, 0);
-    ofClear(0, 0, 0);
-    
-    //ofSetupScreenOrtho(640, 480, OF_ORIENTATION_DEFAULT, true, -1000, 1000);
-    
-    ofMesh imageMesh = camTracker.getImageMesh();
-    
-    ofPolyline faceOutline = camTracker.getImageFeature();
-    
-    
-    ofSetColor(255, 255, 255);
-    ofFill();
-    ofBeginShape();
-    vector<ofVec3f> vertices = faceOutline.getVertices();
-    for (int i = 0; i < vertices.size(); i++) {
-        ofVec3f p = vertices.at(i);
-        ofVertex(p);
+    ofClear(0);
+        
+    if(camTracker.getFound()) {
+
+        staticFbo.begin();
+        
+        ofClear(0);
+        
+        // video mask via face outline
+        ofMesh imageMesh = camTracker.getImageMesh();        
+        ofPolyline faceOutline = camTracker.getImageFeature();        
+        ofSetColor(255);        
+        
+        // create mask from face outline
+        if (showcam) {
+            ofFill(); 
+            ofBeginShape();
+            vector<ofVec3f> vertices = faceOutline.getVertices();
+            for (int i = 0; i < vertices.size(); i++) {
+                ofVec3f p = vertices.at(i);
+                ofVertex(p);
+            }
+            ofEndShape();
+            ofEnableBlendMode(OF_BLENDMODE_MULTIPLY);
+        }
+        cam.draw(0, 0);
+                
+        // draw face
+        ofEnableBlendMode(OF_BLENDMODE_ALPHA);        
+        imageMesh.clearTexCoords();
+        imageMesh.addTexCoords(srcPoints);
+        src.bind();
+        imageMesh.draw();
+        
+        staticFbo.end();
     }
-    ofEndShape();
     
-    ofEnableBlendMode(OF_BLENDMODE_MULTIPLY);
-    
-    
-
-    
-    
-    
-	
-	
-//    if(src.getWidth() > 0 && cloneReady) {
-//		clone.draw(0, 0);
-//	} else {
-//		cam.draw(0, 0);
-//	}
-    
-    cam.draw(0, 0);
-    
-    ofDisableBlendMode();
-    ofEnableBlendMode(OF_BLENDMODE_ALPHA);
-    
-    imageMesh.clearTexCoords();
-    imageMesh.addTexCoords(srcPoints);
-    src.bind();
-    
-    imageMesh.draw();
-    
-
-    /*
-	if(!camTracker.getFound()) {
-		drawHighlightString("camera face not found", 10, 10);
-	}
-	if(src.getWidth() == 0) {
-		drawHighlightString("drag an image here", 10, 30);
-	} else if(!srcTracker.getFound()) {
-		drawHighlightString("image face not found", 10, 30);
-	}
-     */
+    staticFbo.draw(0, 0);
     
 }
 
 void testApp::loadFace(string face){
-	src.loadImage(face);
+    src.loadImage(face);    
 	if(src.getWidth() > 0) {
-		srcTracker.update(toCv(src));
+		srcTracker.update( toCv( src ));
 		srcPoints = srcTracker.getImagePoints();
 	}
 }
@@ -151,29 +128,42 @@ void testApp::dragEvent(ofDragInfo dragInfo) {
 void testApp::keyPressed(int key){
 	
     // static face switching
-    switch(key){
+    switch(key) {
 	
-    case OF_KEY_UP:
-		currentFace++;
-		break;
-	
-    case OF_KEY_DOWN:
-		currentFace--;
-		break;
+        case OF_KEY_RIGHT:
+            currentFace++;
+            break;
+        
+        case OF_KEY_LEFT:
+            currentFace--;
+            break;
             
-    case ' ':
-        int t = ofGetUnixTime();
-        camImg.setFromPixels(camPixels);
-        camImg.saveImage("faces/face_" + ofToString(t) + ".png");               
-        break;    
+        case 'c' :
+            showcam = !showcam;
+            break;
+            
+        case ' ':
+            if(camTracker.getFound()) {  
+                saveFace(ofToString(ofGetUnixTime()));
+                currentFace = faces.size() - 1;
+            }
+            break;    
 	}
-    
-    
-    if (currentFace < 0 || currentFace > faces.size()-1) {
-        currentFace = 0;
+
+    if(faces.size() !=0 ) {
+        if (currentFace < 0) {
+            currentFace = faces.size() - 1;
+        } 
+        if (currentFace > faces.size() - 1) {
+            currentFace = 0;
+        } 
+        loadFace(faces.getPath(currentFace));
     }
-	if(faces.size() !=0 ){
-        faces.listDir(facesDir);
-		loadFace(faces.getPath(currentFace));
-	}
+
+}
+
+void testApp::saveFace( string face ) {
+    camImg.setFromPixels(camPixels);
+    camImg.saveImage("faces/face_" + face + ".png");
+    faces.listDir(facesDir);
 }

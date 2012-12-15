@@ -13,6 +13,7 @@ public:
 	void draw();
 	void dragEvent(ofDragInfo dragInfo);
 	void loadFace(string face);
+    void saveFace(string face);
 	
 	void keyPressed(int key);
 
@@ -28,8 +29,9 @@ public:
 	
 	bool cloneReady;
 	Clone clone;
-	ofFbo srcFbo, maskFbo;
+	ofFbo srcFbo, maskFbo, staticFbo;
 
 	ofDirectory faces;
 	int currentFace;
+
 };
