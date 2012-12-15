@@ -2,6 +2,8 @@
 
 using namespace ofxCv;
 
+string facesDir = "faces";
+
 void testApp::setup() {
 #ifdef TARGET_OSX
 //	ofSetDataPathRoot("../data/");
@@ -22,7 +24,7 @@ void testApp::setup() {
 
 	faces.allowExt("jpg");
 	faces.allowExt("png");
-	faces.listDir("faces");
+	faces.listDir(facesDir);
 	currentFace = 0;
 	if(faces.size()!=0){
 		loadFace(faces.getPath(currentFace));
@@ -162,7 +164,7 @@ void testApp::keyPressed(int key){
     case ' ':
         int t = ofGetUnixTime();
         camImg.setFromPixels(camPixels);
-        camImg.saveImage("capture/face_" + ofToString(t) + ".png");               
+        camImg.saveImage("faces/face_" + ofToString(t) + ".png");               
         break;    
 	}
     
@@ -171,6 +173,7 @@ void testApp::keyPressed(int key){
         currentFace = 0;
     }
 	if(faces.size() !=0 ){
+        faces.listDir(facesDir);
 		loadFace(faces.getPath(currentFace));
 	}
 }
