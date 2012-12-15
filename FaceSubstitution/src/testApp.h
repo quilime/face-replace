@@ -17,7 +17,10 @@ public:
 	void keyPressed(int key);
 
 	ofxFaceTrackerThreaded camTracker;
+    
 	ofVideoGrabber cam;
+    ofPixels camPixels;
+    ofImage camImg;
 	
 	ofxFaceTracker srcTracker;
 	ofImage src;

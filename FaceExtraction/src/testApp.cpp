@@ -46,8 +46,6 @@ void testApp::draw() {
         //        ofScale(10, 10, 10);
         //        ofRotate(4.5, 0, 0, 1);        
         
-
-        
 		cam.getTextureReference().bind();        
         
         //meanMesh.draw();

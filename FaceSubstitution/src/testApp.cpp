@@ -23,6 +23,7 @@ void testApp::setup() {
 	faces.allowExt("jpg");
 	faces.allowExt("png");
 	faces.listDir("faces");
+    
 	currentFace = 0;
 	if(faces.size()!=0){
 		loadFace(faces.getPath(currentFace));
@@ -30,7 +31,10 @@ void testApp::setup() {
 }
 
 void testApp::update() {
-	cam.update();
+	
+    cam.update();
+    cam.getTextureReference().readToPixels(camPixels);
+    
 	if(cam.isFrameNew()) {
 		camTracker.update(toCv(cam));
 		
@@ -92,14 +96,26 @@ void testApp::dragEvent(ofDragInfo dragInfo) {
 }
 
 void testApp::keyPressed(int key){
-	switch(key){
-	case OF_KEY_UP:
+	
+    // static face switching
+    switch(key){
+	
+    case OF_KEY_UP:
 		currentFace++;
 		break;
-	case OF_KEY_DOWN:
+	
+    case OF_KEY_DOWN:
 		currentFace--;
 		break;
+            
+    case ' ':
+        int t = ofGetUnixTime();
+        camImg.grabScreen(0, 0, ofGetWidth(), ofGetHeight());
+        camImg.saveImage("capture/face_" + ofToString(t) + ".png");               
+        break;    
 	}
+    
+    
 	currentFace = ofClamp(currentFace,0,faces.size());
 	if(faces.size()!=0){
 		loadFace(faces.getPath(currentFace));
