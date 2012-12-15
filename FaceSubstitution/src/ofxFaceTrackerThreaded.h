@@ -37,6 +37,14 @@ public:
 		}
 		return imageMesh;
 	}
+    ofPolyline getImageFeature() {
+        ofPolyline imageFeature;
+        if(lock()) {
+            imageFeature = tracker->getImageFeature(tracker->FACE_OUTLINE);
+            unlock();
+        }
+        return imageFeature;
+    }
 protected:
 	void threadedFunction() {
 		newFrame = false;
