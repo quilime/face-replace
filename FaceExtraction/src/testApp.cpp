@@ -2,14 +2,14 @@
 
 using namespace ofxCv;
 
-
-
 void testApp::setup() {
 	ofSetVerticalSync(true);
-	cam.initGrabber(1024, 768);
+	cam.initGrabber(640, 480);
 	tracker.setup();
     
-        
+    srcTracker.setup();
+	srcTracker.setIterations(25);
+	srcTracker.setAttempts(4);    
 }
 
 void testApp::update() {
@@ -23,39 +23,53 @@ void testApp::draw() {
     
 	ofSetColor(255);
     
-    cam.draw(0, 0);
-    
-	ofDrawBitmapString(ofToString((int) ofGetFrameRate()), 10, 20);
+    //cam.draw(0, 0);
     
     //    ofClear(0, 0, 0);
-
-    // save camera pixels
     
+    // save camera pixels
 	cam.getTextureReference().readToPixels(camImgPixels);
     
 	if(tracker.getFound()) {
         
-        //		tracker.draw();
-        ofMesh objectMesh   = tracker.getObjectMesh();
-        ofMesh meanMesh     = tracker.getMeanObjectMesh();
-        ofMesh getImageMesh = tracker.getImageMesh();
+        
 		
-		ofSetupScreenOrtho(1024, 768, OF_ORIENTATION_DEFAULT, true, -1000, 1000);
+		ofSetupScreenOrtho(640, 480, OF_ORIENTATION_DEFAULT, true, -1000, 1000);
         
-        //        ofTranslate(ofGetWidth()/2, ofGetHeight()/2);
-        //        ofScale(10, 10, 10);
-        //        ofRotate(4.5, 0, 0, 1);        
+        ofMesh imageMesh = tracker.getImageMesh();
         
-		cam.getTextureReference().bind();        
+        ofPolyline faceOutline = tracker.getImageFeature(ofxFaceTracker::FACE_OUTLINE);
         
-        //meanMesh.draw();
-        getImageMesh.draw();
+        ofSetColor(255, 255, 255);
+        ofFill();
+        faceOutline.draw();
+        //cam.draw(0, 0);
         
-        //objectMesh.draw();
+        //cam.getTextureReference().bind();
+        
+        imageMesh.clearTexCoords();
+        imageMesh.addTexCoords(srcPoints);
+        src.bind();
+        
+        //imageMesh.draw();
+        
 		cam.getTextureReference().unbind();
+	}
+    
+    ofDrawBitmapString(ofToString((int) ofGetFrameRate()), 10, 20);
+}
+
+void testApp::loadFace(string face){
+	src.loadImage(face);
+	if(src.getWidth() > 0) {
+		srcTracker.update(toCv(src));
+		srcPoints = srcTracker.getImagePoints();
 	}
 }
 
+void testApp::dragEvent(ofDragInfo dragInfo) {
+	loadFace(dragInfo.files[0]);
+}
 
 void testApp::keyPressed(int key) {
 	if(key == 'r') {

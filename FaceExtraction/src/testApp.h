@@ -16,6 +16,13 @@ public:
     
 	ofVideoGrabber cam;
 	ofxFaceTracker tracker;
-		
+    
 	ofEasyCam easyCam;
+    
+    void dragEvent(ofDragInfo dragInfo);
+	void loadFace(string face);
+    
+    ofxFaceTracker srcTracker;
+	ofImage src;
+	vector<ofVec2f> srcPoints;
 };
