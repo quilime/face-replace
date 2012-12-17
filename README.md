@@ -9,6 +9,7 @@ By turning the knob left and right, viewers can view all other faces. Also inclu
 of celebrities and cartoons.
 
 ![](http://24.media.tumblr.com/93ad60927841e9f323271f54247ad0b3/tumblr_mf6vefI0h41rlcnubo1_1280.jpg)
+![](http://distilleryimage5.instagram.com/9541f3c8473c11e2877022000a9f1278_7.jpg)
 
 Built with [OpenFrameworks](https://github.com/openframeworks/openFrameworks) 
 and [ofxFaceTracker](https://github.com/kylemcdonald/ofxFaceTracker) and based on examples in [FaceSubstitution](https://github.com/arturoc/FaceSubstitution).
